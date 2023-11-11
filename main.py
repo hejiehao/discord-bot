@@ -2,6 +2,24 @@ from typing import Optional
 from utils.open_json import *
 import discord
 from discord import app_commands
+import logging
+import logging.handlers
+
+#Set up logging
+logger = logging.getLogger('discord')
+logger.setLevel(logging.DEBUG)
+logging.getLogger('discord.http').setLevel(logging.INFO)
+
+handler = logging.handlers.RotatingFileHandler(
+    filename='discord.log',
+    encoding='utf-8',
+    maxBytes=32 * 1024 * 1024,  # 32 MiB
+    backupCount=5,  # Rotate through 5 files
+)
+dt_fmt = '%Y-%m-%d %H:%M:%S'
+formatter = logging.Formatter('[{asctime}] [{levelname:<8}] {name}: {message}', dt_fmt, style='{')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # open config.json
 config = open_json('./config/config.json')
@@ -130,4 +148,4 @@ async def secret(interaction: discord.Interaction, text_to_send: str):
     """Sends the text into the current channel secretly."""
     await interaction.response.send_message(text_to_send, ephemeral=True)
 
-client.run(config['token'])
+client.run(config['token'], log_handler=None)
