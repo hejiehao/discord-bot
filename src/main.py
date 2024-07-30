@@ -48,10 +48,7 @@ class MyClient(discord.Client):
 
 
 intents = discord.Intents.default()
-intents.members = True
-intents.message_content = True
 client = MyClient(intents=intents)
-bot = commands.Bot(command_prefix='?', intents=intents)
 
 
 @client.event
@@ -65,9 +62,18 @@ async def on_ready():
     first_value='第一个数字',
     second_value='第二个数字',
 )
-async def add(interaction: discord.Interaction, first_value: int, second_value: int):
+async def add(interaction: discord.Interaction, first_value: float, second_value: float):
     """把两个数字加在一起"""
     await interaction.response.send_message(f'{first_value} + {second_value} = {first_value + second_value}')
+    
+@client.tree.command()
+@app_commands.describe(
+    minuend='被减数',
+    subtrahend='减数',
+)
+async def subtract(interaction: discord.Interaction, minuend: float, subtrahend: float):
+    """把两个数字相减"""
+    await interaction.response.send_message(f'{minuend} - {subtrahend} = {minuend - subtrahend}')
 
 
 # The rename decorator allows us to change the display of the parameter on Discord.
@@ -132,11 +138,6 @@ async def report_message(interaction: discord.Interaction, message: discord.Mess
 async def hello(interaction: discord.Interaction):
     """打招呼！"""
     await interaction.response.send_message(f'你好, {interaction.user.mention}')
-    
-@bot.commands()
-async def ping(ctx, member: discord.Member, times: int):
-    """Ping a member."""
-    await ctx.send(f'<@{member.id}>\n'*times)
+
 
 client.run(os.environ['TOKEN'], log_handler=None)
-bot.run(os.environ['TOKEN'])
