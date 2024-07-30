@@ -139,3 +139,4 @@ async def ping(ctx, member: discord.Member, times: int):
     await ctx.send(f'<@{member.id}>\n'*times)
 
 client.run(os.environ['TOKEN'], log_handler=None)
+bot.run(os.environ['TOKEN'])
