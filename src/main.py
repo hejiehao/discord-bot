@@ -40,7 +40,7 @@ class MyClient(discord.Client):
 
 intents = discord.Intents.default()
 intents.message_content = True  # This makes the bot able to read message content
-client = MyClient(command_prefix="?", intents=intents)
+client = MyClient(intents=intents)
 
 @client.event
 async def on_ready():
