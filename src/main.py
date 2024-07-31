@@ -1,7 +1,6 @@
 from typing import Optional
 import discord
 from discord import app_commands
-from discord.ext import commands
 import logging
 import logging.handlers
 import os
@@ -38,18 +37,14 @@ class MyClient(discord.Client):
         # maintain its own tree instead.
         self.tree = app_commands.CommandTree(self)
 
-    # In this basic example, we just synchronize the app commands to one guild.
-    # Instead of specifying a guild to every command, we copy over our global commands instead.
-    # By doing so, we don't have to wait up to an hour until they are shown to the end-user.
+    # This event is called when the bot is ready to start using application commands.
     async def setup_hook(self):
-        # This copies the global commands over to your guild.
-        self.tree.copy_global_to(guild=MY_GUILD)
-        await self.tree.sync(guild=MY_GUILD)
+        await self.tree.sync()
 
 
 intents = discord.Intents.default()
-client = MyClient(intents=intents)
-
+intents.message_content = True  # This makes the bot able to read message content
+client = MyClient(command_prefix="?", intents=intents)
 
 @client.event
 async def on_ready():
