@@ -110,6 +110,15 @@ async def hello(interaction: discord.Interaction):
 async def ping(interaction: discord.Interaction):
     """ping pong"""
     await interaction.response.send_message('Pong！')
+    
+@client.tree.command()
+@app_commands.describe(
+    member="你想要谴责的人",
+    content="你想要谴责的内容",
+)
+async def blame(interaction: discord.Interaction, member: discord.Member, content: str):
+    """谴责一个人"""
+    await interaction.response.send_message(f'我方对{content}表示强烈谴责。{content}是<@{member.id}>的蓄意行为，这种行为侵犯了我方的正当权益。我方要求<@{member.id}>立即停止{content}，并采取措施纠正错误。我方将继续密切关注此事的进展，并采取一切必要措施，以维护我方的正当权益。')
 
 
 client.run(os.environ['TOKEN'], log_handler=None)
