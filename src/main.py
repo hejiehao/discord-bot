@@ -114,6 +114,11 @@ async def show_join_date(interaction: discord.Interaction, member: discord.Membe
 async def hello(interaction: discord.Interaction):
     """打招呼！"""
     await interaction.response.send_message(f'你好, {interaction.user.mention}')
+    
+@client.tree.command()
+async def ping(interaction: discord.Interaction):
+    """ping pong"""
+    await interaction.response.send_message('Pong！')
 
 
 client.run(os.environ['TOKEN'], log_handler=None)
