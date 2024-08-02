@@ -148,17 +148,12 @@ async def mcmod(interaction: discord.Interaction, query: str, mold: Optional[Cho
     """"在 MC 百科上搜索"""
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://mcmod-api.zkitefly.eu.org/s/key={urllib.parse.quote(query)}{"&mold=0" if mold == None else f"&mold={mold.value}"}{"" if filter == None else f"&filter={filter.value}"}") as response:
-            embed = []
+            embeds = []
             ret =json.loads(await response.text())
             for i in ret:
-                embed.append({
-                    "type": "rich",
-                    "url": i['address'],
-                    "title": i['title'],
-                    "description": i['description'],
-                    "color": 0x94ff,
-                    "timestamp": i['snapshot_time']
-                })
-            await interaction.response.send_message(embeds=discord.Embed.from_dict(embed))
+                embed = discord.Embed(title=i['title'], description=i['description'], color=0x94ff, type="rich", url=i['address'])
+                embed.set_footer(text=i['snapshot_time'])
+                embeds.append(embed)
+            await interaction.response.send_message(embeds=embeds)
 
 client.run(os.environ['TOKEN'], log_handler=None)
