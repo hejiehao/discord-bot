@@ -1,8 +1,8 @@
 import aiohttp
-from typing import Optional
 import discord
 from discord import app_commands
 from discord.app_commands import Choice
+import json
 import logging
 import logging.handlers
 import os
@@ -150,7 +150,8 @@ async def mcmod(interaction: discord.Interaction, query: str, mold: Optional[Cho
         async with session.get(f"https://mcmod-api.zkitefly.eu.org/s/key={urllib.parse.quote(query)}{"&mold=0" if mold == None else f"&mold={mold.value}"}{"" if filter == None else f"&filter={filter.value}"}") as response:
             if response.status == 200:
                 embed = []
-                for i in response.json():
+                ret =json.loads(await response.text())
+                for i in ret:
                     embed.append({
                         "type": "rich",
                         "url": i['address'],
