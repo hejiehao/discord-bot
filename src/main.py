@@ -144,10 +144,10 @@ async def blame(interaction: discord.Interaction, member: discord.Member, conten
                           Choice(name="简单搜索", value=0),
                           Choice(name="复杂搜索", value=1),
                       ])
-async def mcmod(interaction: discord.Interaction, query: str, mold: Choice[int], filter: Optional[Choice[int]] = None):
+async def mcmod(interaction: discord.Interaction, query: str, mold: Optional[Choice[int]] = None, filter: Optional[Choice[int]] = None):
     """"在 MC 百科上搜索"""
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://mcmod-api.zkitefly.eu.org/s/key={urllib.parse.quote(query)}&mold={mold.value}{"" if filter == None else f"&filter={filter.value}"}") as response:
+        async with session.get(f"https://mcmod-api.zkitefly.eu.org/s/key={urllib.parse.quote(query)}{"&mold=0" if mold == None else f"&mold={mold.value}"}{"" if filter == None else f"&filter={filter.value}"}") as response:
             if response.status == 200:
                 embed = []
                 for i in response.json():
