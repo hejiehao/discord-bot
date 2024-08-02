@@ -1,9 +1,13 @@
+import aiohttp
 from typing import Optional
 import discord
 from discord import app_commands
+from discord.app_commands import Choice
 import logging
 import logging.handlers
 import os
+from typing import Optional
+import urllib.parse
 
 #Set up logging
 logger = logging.getLogger('discord')
@@ -120,5 +124,43 @@ async def blame(interaction: discord.Interaction, member: discord.Member, conten
     """谴责一个人"""
     await interaction.response.send_message(f'我方对{content}表示强烈谴责。{content}是<@{member.id}>的蓄意行为，这种行为侵犯了我方的正当权益。我方要求<@{member.id}>立即停止{content}，并采取措施纠正错误。我方将继续密切关注此事的进展，并采取一切必要措施，以维护我方的正当权益。')
 
+
+@client.tree.command()
+@app_commands.describe(
+    query="你想要搜索的词语",
+    filter="筛选类型",
+    mold="搜索方式",
+)
+@app_commands.choices(filter=[
+    Choice(name="模组", value=1),
+    Choice(name="整合包", value=2),
+    Choice(name="资料", value=3),
+    Choice(name="教程", value=4),
+    Choice(name="作者", value=5),
+    Choice(name="用户", value=6),
+    Choice(name="社群", value=7),
+],
+                      mold=[
+                          Choice(name="简单搜索", value=0),
+                          Choice(name="复杂搜索", value=1),
+                      ])
+async def mcmod(interaction: discord.Interaction, query: str, mold: Choice[int], filter: Optional[Choice[int]] = None):
+    """"在 MC 百科上搜索"""
+    async with aiohttp.ClientSession() as session:
+        async with session.get(f"https://mcmod-api.zkitefly.eu.org/s/key={urllib.parse.quote(query)}&mold={mold.value}{"" if filter == None else f"&filter={filter.value}"}") as response:
+            if response.status == 200:
+                embed = []
+                for i in response.json():
+                    embed.append({
+                        "type": "rich",
+                        "url": i['address'],
+                        "title": i['title'],
+                        "description": i['description'],
+                        "color": 0x94ff,
+                        "timestamp": i['snapshot_time']
+                    })
+                await interaction.response.send_message(embeds=discord.Embed.from_dict(embed))
+            else:
+                await interaction.response.send_message("搜索失败，请检查你的输入。")
 
 client.run(os.environ['TOKEN'], log_handler=None)
