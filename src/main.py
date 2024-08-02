@@ -148,20 +148,17 @@ async def mcmod(interaction: discord.Interaction, query: str, mold: Optional[Cho
     """"在 MC 百科上搜索"""
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://mcmod-api.zkitefly.eu.org/s/key={urllib.parse.quote(query)}{"&mold=0" if mold == None else f"&mold={mold.value}"}{"" if filter == None else f"&filter={filter.value}"}") as response:
-            if response.status == 200:
-                embed = []
-                ret =json.loads(await response.text())
-                for i in ret:
-                    embed.append({
-                        "type": "rich",
-                        "url": i['address'],
-                        "title": i['title'],
-                        "description": i['description'],
-                        "color": 0x94ff,
-                        "timestamp": i['snapshot_time']
-                    })
-                await interaction.response.send_message(embeds=discord.Embed.from_dict(embed))
-            else:
-                await interaction.response.send_message("搜索失败，请检查你的输入。")
+            embed = []
+            ret =json.loads(await response.text())
+            for i in ret:
+                embed.append({
+                    "type": "rich",
+                    "url": i['address'],
+                    "title": i['title'],
+                    "description": i['description'],
+                    "color": 0x94ff,
+                    "timestamp": i['snapshot_time']
+                })
+            await interaction.response.send_message(embeds=discord.Embed.from_dict(embed))
 
 client.run(os.environ['TOKEN'], log_handler=None)
